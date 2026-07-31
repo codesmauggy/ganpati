@@ -9,7 +9,7 @@ class Customer(models.Model):
     )
     customer_id = models.CharField(max_length=20, unique=True)
     name = models.CharField(max_length=100)
-    contact = models.CharField(max_length=15)
+    contact = models.CharField(max_length=15, unique=True)
     alt_contact = models.CharField(max_length=15, blank=True)
     address = models.TextField(blank=True)
     village = models.CharField(max_length=100, blank=True)

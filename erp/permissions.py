@@ -40,3 +40,8 @@ class IsOwnerOrHigher(BasePermission):
         if isinstance(obj, Customer) and obj.ref_by == user:
             return True
         return False
+
+# erp/permissions.py (add this class)
+class IsAdminOrManager(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.role in ['admin', 'manager']

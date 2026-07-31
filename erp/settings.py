@@ -118,8 +118,11 @@ WHITENOISE_ROOT = BASE_DIR / 'frontend'     # serves assets at root
 WHITENOISE_INDEX_FILE = False               # don't serve index.html for directories
 
 STORAGES = {
-    'staticfiles': {
-        'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }
 
@@ -165,4 +168,4 @@ CORS_ALLOW_HEADERS = [
 
 # Media (for model photos)
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = BASE_DIR / 'media'   

@@ -5,7 +5,7 @@ from sales.models import Booking
 from sales.serializers import BookingSerializer
 
 class CustomerSerializer(serializers.ModelSerializer):
-    ref_by_display = serializers.CharField(source='ref_by.full_name', read_only=True)
+    ref_by_display = serializers.CharField(source='ref_by.fullName', read_only=True)
     total_billed = serializers.SerializerMethodField()
     total_paid = serializers.SerializerMethodField()
     balance = serializers.SerializerMethodField()
