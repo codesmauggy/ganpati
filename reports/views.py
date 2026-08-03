@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Sum, F
 from catalog.models import Model
-from sales.models import Booking
+from sales.models import RetailBooking, WholesaleBooking, OrderItem
 from expenses.models import Expense
 from workforce.models import Worker
 from customers.models import CustomerPayment
@@ -14,17 +14,22 @@ class DashboardView(APIView):
     def get(self, request):
         total_stock = Model.objects.aggregate(total=Sum('available'))['total'] or 0
         total_models = Model.objects.count()
-        wholesale_value = Booking.objects.filter(channel='Wholesale').aggregate(total=Sum('amount'))['total'] or 0
-        retail_value = Booking.objects.filter(channel='Retail').aggregate(total=Sum('amount'))['total'] or 0
-        wholesale_count = Booking.objects.filter(channel='Wholesale').count()
-        retail_count = Booking.objects.filter(channel='Retail').count()
+        low_stock_count = Model.objects.filter(available__lte=F('low_stock_at')).count()
+
+        # Retail
+        retail_value = RetailBooking.objects.aggregate(total=Sum('amount'))['total'] or 0
+        retail_count = RetailBooking.objects.count()
+
+        # Wholesale – use stored total on WholesaleBooking
+        wholesale_value = WholesaleBooking.objects.aggregate(total=Sum('amount'))['total'] or 0
+        wholesale_count = WholesaleBooking.objects.count()
+
+        total_billed = retail_value + wholesale_value
         collection = CustomerPayment.objects.aggregate(total=Sum('amount'))['total'] or 0
-        total_billed = Booking.objects.aggregate(total=Sum('amount'))['total'] or 0
         pending = total_billed - collection
         expenses = Expense.objects.aggregate(total=Sum('amount'))['total'] or 0
         staff_payments = Worker.objects.aggregate(total=Sum('pending_salary'))['total'] or 0
         net_profit = collection - expenses - staff_payments
-        low_stock_count = Model.objects.filter(available__lte=F('low_stock_at')).count()
 
         data = {
             'total_stock': total_stock,

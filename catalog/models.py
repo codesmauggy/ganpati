@@ -1,6 +1,13 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 
+class Category(models.Model):
+    name = models.CharField(max_length=100)
+    type = models.CharField(max_length=50, blank=True, default='Primary')
+
+    def __str__(self):
+        return self.name
+
 class Model(models.Model):
     CATEGORY_CHOICES = (
         ('Ganapati', 'Ganapati'),

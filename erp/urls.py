@@ -20,6 +20,7 @@ urlpatterns = [
     path('api/', include('expenses.urls')),
     path('api/', include('customers.urls')),
     path('api/', include('reports.urls')),
+    path('api/', include('settings.urls')),
     path('api/', include(router.urls)),
     *spa_urlpatterns,   # catch-all fallback – keep LAST
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

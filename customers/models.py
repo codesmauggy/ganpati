@@ -3,10 +3,7 @@ from django.conf import settings
 from django.core.validators import MinValueValidator
 
 class Customer(models.Model):
-    TAG_CHOICES = (
-        ('Retail', 'Retail'),
-        ('Wholesale', 'Wholesale'),
-    )
+    TAG_CHOICES = (('Retail', 'Retail'), ('Wholesale', 'Wholesale'))
     customer_id = models.CharField(max_length=20, unique=True)
     name = models.CharField(max_length=100)
     contact = models.CharField(max_length=15, unique=True)
@@ -25,15 +22,13 @@ class Customer(models.Model):
     def save(self, *args, **kwargs):
         if not self.customer_id:
             last = Customer.objects.all().order_by('id').last()
-            if last:
-                num = int(last.customer_id.split('-')[1]) + 1
-            else:
-                num = 1
+            num = int(last.customer_id.split('-')[1]) + 1 if last else 1
             self.customer_id = f"C-{num:03d}"
         super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
+
 
 class CustomerPayment(models.Model):
     MODE_CHOICES = (
@@ -49,6 +44,7 @@ class CustomerPayment(models.Model):
     amount = models.IntegerField(validators=[MinValueValidator(0)])
     mode = models.CharField(max_length=20, choices=MODE_CHOICES)
     reference = models.CharField(max_length=100, blank=True)
+    # Use string reference to avoid circular import
     booking = models.ForeignKey('sales.Booking', on_delete=models.SET_NULL, null=True, blank=True, related_name='payments')
     received_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     note = models.TextField(blank=True)
@@ -56,15 +52,13 @@ class CustomerPayment(models.Model):
     def save(self, *args, **kwargs):
         if not self.payment_id:
             last = CustomerPayment.objects.all().order_by('id').last()
-            if last:
-                num = int(last.payment_id.split('-')[1]) + 1
-            else:
-                num = 1
+            num = int(last.payment_id.split('-')[1]) + 1 if last else 1
             self.payment_id = f"PY-{num:04d}"
         super().save(*args, **kwargs)
 
     def __str__(self):
         return self.payment_id
+
 
 class LedgerEntry(models.Model):
     TYPE_CHOICES = (
